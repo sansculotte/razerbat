@@ -53,14 +53,14 @@ def check(alert: Alert):
             alert.stop()
 
 
-def run(alert: Alert):
+def run():
+    device = DeviceManager().devices[0]
+    alert = Alert(device)
     while True:
         check(alert)
         time.sleep(CHECK_INTERVAL)
 
 
 if __name__ == '__main__':
-    device = DeviceManager().devices[0]
-    alert = Alert(device)
     with daemon.DaemonContext():
-        run(alert)
+        run()
