@@ -47,15 +47,16 @@ def check(alert: Alert):
     if status == 'Discharging' and capacity <= CAPACITY_THRESHOLD:
         if not alert.active:
             alert.start()
+
     if status == 'Charging' or capacity > CAPACITY_THRESHOLD:
         if alert.active:
             alert.stop()
 
 
 def run(alert: Alert):
-    while 1:
+    while True:
         check(alert)
-        sleep(CHECK_INTERVAL)
+        time.sleep(CHECK_INTERVAL)
 
 
 if __name__ == '__main__':
