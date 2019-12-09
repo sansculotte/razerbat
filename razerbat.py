@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from os import path
 import time
+import daemon
 from openrazer.client import DeviceManager
 from openrazer.client.constants import REACTIVE_500MS, WAVE_LEFT
 
@@ -36,7 +37,7 @@ class Alert(object):
         self.device.fx.reactive(255, 0, 0, REACTIVE_500MS)
 
 
-def check(alert):
+def check(alert: Alert):
     with open(path.join(SYS_CLASS_PATH, 'status')) as f:
         status = f.readline().strip()
 
@@ -46,15 +47,20 @@ def check(alert):
     if status == 'Discharging' and capacity <= CAPACITY_THRESHOLD:
         if not alert.active:
             alert.start()
+
     if status == 'Charging' or capacity > CAPACITY_THRESHOLD:
         if alert.active:
             alert.stop()
-        else:
-            time.sleep(CHECK_INTERVAL)
+
+
+def run():
+    device = DeviceManager().devices[0]
+    alert = Alert(device)
+    while True:
+        check(alert)
+        time.sleep(CHECK_INTERVAL)
 
 
 if __name__ == '__main__':
-    device = DeviceManager().devices[0]
-    alert = Alert(device)
-    while 1:
-        check(alert)
+    with daemon.DaemonContext():
+        run()
