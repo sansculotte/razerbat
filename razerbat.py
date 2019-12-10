@@ -24,14 +24,12 @@ class Alert(object):
             self.device = device
 
     def start(self):
-        if not self.active:
-            self.active = True
-            self.device.fx.wave(WAVE_LEFT)
+        self.active = True
+        self.device.fx.wave(WAVE_LEFT)
 
     def stop(self):
-        if self.active:
-            self.active = False
-            self.set_previous_effect()
+        self.active = False
+        self.set_previous_effect()
 
     def set_previous_effect(self):
         self.device.fx.reactive(255, 0, 0, REACTIVE_500MS)
