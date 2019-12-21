@@ -47,8 +47,7 @@ def check(alert: Alert):
             alert.start()
 
     if status == 'Charging' or capacity > CAPACITY_THRESHOLD:
-        if alert.active:
-            alert.stop()
+        alert.stop()
 
 
 def run():
