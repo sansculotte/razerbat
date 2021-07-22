@@ -8,7 +8,7 @@ from openrazer.client.constants import REACTIVE_500MS, WAVE_LEFT
 
 SYS_CLASS_PATH = '/sys/class/power_supply/BAT0'
 CAPACITY_THRESHOLD = 15
-CHECK_INTERVAL = 10 # seconds
+CHECK_INTERVAL = 10  # seconds
 
 
 class Alert(object):
@@ -17,8 +17,13 @@ class Alert(object):
         self.active = False
         if device is None:
             try:
-                self.device = DeviceManager().devices[0]
-            except IndexError:
+                self.device = next(
+                    filter(
+                        lambda x: x._type == 'keyboard',
+                        DeviceManager().devices
+                    )
+                )
+            except StopIteration:
                 print('ERROR: No razer device found')
         else:
             self.device = device
