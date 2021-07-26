@@ -11,22 +11,26 @@ CAPACITY_THRESHOLD = 15
 CHECK_INTERVAL = 10  # seconds
 
 
-class Alert(object):
+class NoDeviceFoundError(Exception):
+    pass
 
+
+def get_device():
+    try:
+        return next(
+            filter(
+                lambda x: x._type == 'keyboard',
+                DeviceManager().devices
+            )
+        )
+    except StopIteration as e:
+        raise NoDeviceFoundError('ERROR: No razer device found') from e
+
+
+class Alert:
     def __init__(self, device=None):
         self.active = False
-        if device is None:
-            try:
-                self.device = next(
-                    filter(
-                        lambda x: x._type == 'keyboard',
-                        DeviceManager().devices
-                    )
-                )
-            except StopIteration:
-                print('ERROR: No razer device found')
-        else:
-            self.device = device
+        self.device = device or get_device()
 
     def start(self):
         self.active = True
@@ -56,8 +60,7 @@ def check(alert: Alert):
 
 
 def run():
-    device = DeviceManager().devices[0]
-    alert = Alert(device)
+    alert = Alert()
     while True:
         check(alert)
         time.sleep(CHECK_INTERVAL)
